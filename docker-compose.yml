@@ -1,0 +1,21 @@
+services:
+  rabbitmq:
+    image: rabbitmq:4-management
+    container_name: iot-rabbitmq
+    hostname: iot-rabbitmq          # fester Hostname -> Daten im Volume bleiben nutzbar
+    ports:
+      - "5672:5672"     # AMQP
+      - "15672:15672"   # Management-UI: http://localhost:15672 (iot / iot)
+    environment:
+      RABBITMQ_DEFAULT_USER: iot
+      RABBITMQ_DEFAULT_PASS: iot
+    volumes:
+      - rabbitmq-data:/var/lib/rabbitmq
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 6
+
+volumes:
+  rabbitmq-data:
