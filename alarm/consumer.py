@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import json
 import time
-
+import pika
 
 def process_message(message: object):
     """Validate a sensor payload before processing it.
@@ -10,7 +10,3 @@ def process_message(message: object):
     """
     if not isinstance(message, dict):
         raise ValueError("Message must be a JSON object")
-
-
-
-
