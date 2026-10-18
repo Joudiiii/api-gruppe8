@@ -254,7 +254,7 @@ def test_message_ttl() -> None:
     """
     A valid reading that is not consumed within the TTL should be routed to the shared DLQ.
     For Task 2.6:
-    1. Stopping the consumer and leaving the message in the queue for longer than 60 seconds will cause the message to
+    1. Stopping the consumer and leaving the message in the queue for longer than 10 seconds will cause the message to
         be marked as expired and thus moved into the DLQ.
     2. RabbitMQ will route the expired message to the dead-letter queue (DLQ).
     3. Neither, as the consumer is not running, so no NACK will be sent.
@@ -276,7 +276,7 @@ def test_message_ttl() -> None:
 
         send_sensor_reading(channel, VALID_READING)
 
-        time.sleep(61)  # TTL is currently 60 seconds, so wait slightly longer.
+        time.sleep(11)  # TTL is currently 10 seconds, so wait slightly longer.
 
         _, properties, body = _wait_for_dead_letter(channel)
 
