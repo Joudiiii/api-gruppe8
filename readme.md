@@ -19,5 +19,9 @@
 ├── alarm/                              # (2.3)
 ├── monitoring/                         # (2.5)
 ├── resilience/                         # (2.6) Szenarien, DLQ-Inspector
+│   ├── test_consumer_crash.py
+│   ├── test_invalid_message.py
+│   ├── dlq_inspector.py
+│   └── README.md
 └── docker-compose.yml                  # als lokale RabbitMQ-Umgebung
 ```
