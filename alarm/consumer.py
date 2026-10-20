@@ -11,6 +11,11 @@ ALARM_WARNING_QUEUE = "alarm.warning"
 ALARM_CRITICAL_QUEUE = "alarm.critical"
 ALARM_EXCHANGE = os.getenv("ALARM_EXCHANGE", "alarm-exchange")
 
+alarm_counter = {
+    "CRITICAL": 0,
+    "WARNING": 0
+}
+
 
 def handle_alarm(alarm: dict, priority: str):
     print(f"Alarm der Priorität {priority}wird verarbeitet :{alarm}")
@@ -21,7 +26,14 @@ def handle_alarm(alarm: dict, priority: str):
     alarm_id, timestamp, sensor_id, sensor_type, value, severity, source_timestamp, message = (
         alarm)["alarm_id", "timestamp", "sensor_id", "sensor_type", "value", "severity", "source_timestamp", "message"]
 
-    print(f"Der {severity} Alarm {alarm_id} wurde um {source_timestamp} für den Sensor {sensor_id} ausgelöst.")
+    print(f"Der {severity} Alarm {alarm_id} wurde um {source_timestamp} für einen Sensor des Typs {sensor_type} "
+          f"ausgelöst.")
+
+    print(f"Der Alarm wurde um {timestamp} erkannt. Der Sensor {sensor_id} hat den Wert {value} "
+          f"gemessen. {message}")
+
+    alarm_counter[priority] += 1
+    print(f"Anzahl erfolgreicher {priority} verarbeiteter Alarme: {alarm_counter[priority]}")
 
 
 def init_connection():
@@ -42,6 +54,9 @@ def init_connection():
 
     try:
         while True:
+            critical_counter = 0
+            warning_counter = 0
+
             method, properties, body = channel.basic_get(
                 queue=ALARM_CRITICAL_QUEUE,
                 auto_ack=False
