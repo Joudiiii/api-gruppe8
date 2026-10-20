@@ -5,33 +5,38 @@ import os
 import time
 import pika
 
+from analysis.consumer import validate_reading
+
 ALARM_WARNING_QUEUE = "alarm.warning"
 ALARM_CRITICAL_QUEUE = "alarm.critical"
 ALARM_EXCHANGE = os.getenv("ALARM_EXCHANGE", "alarm-exchange")
 
 
-
 def handle_alarm(alarm: dict, priority: str):
+    print(f"Alarm der Priorität {priority}wird verarbeitet :{alarm}")
 
-    alarm_id
-    timestamp
-    sensor_id
-    sensor_type
-    value
-    severity
-    source_timestamp
-    message
+    """ Validierung der Nachricht"""
+    validate_reading(alarm)
+
+    alarm_id, timestamp, sensor_id, sensor_type, value, severity, source_timestamp, message = (
+        alarm)["alarm_id", "timestamp", "sensor_id", "sensor_type", "value", "severity", "source_timestamp", "message"]
+
+    print(f"Der {severity} Alarm {alarm_id} wurde um {source_timestamp} für den Sensor {sensor_id} ausgelöst.")
 
 
 def init_connection():
     connection = pika.BlockingConnection(pika.ConnectionParameters('localhost'))
     channel = connection.channel()
 
-    channel.queue_declare(queue=ALARM_CRITICAL_QUEUE, passive=True)
-    channel.queue_declare(queue=ALARM_WARNING_QUEUE, passive=True)
+    channel.queue_declare(queue=ALARM_CRITICAL_QUEUE, passive=True, durable=True)
+    channel.queue_declare(queue=ALARM_WARNING_QUEUE, passive=True, durable=True)
 
-    channel.queue_bind(exchange=ALARM_EXCHANGE, queue=ALARM_CRITICAL_QUEUE, routing_key="alarm.critical")
-    channel.queue_bind(exchange=ALARM_EXCHANGE, queue=ALARM_WARNING_QUEUE, routing_key="alarm.warning")
+    channel.queue_bind(exchange=ALARM_EXCHANGE,
+                       queue=ALARM_CRITICAL_QUEUE,
+                       routing_key="alarm.critical")
+    channel.queue_bind(exchange=ALARM_EXCHANGE,
+                       queue=ALARM_WARNING_QUEUE,
+                       routing_key="alarm.warning")
 
     print("Alarm-Consumer gestartet!")
 
