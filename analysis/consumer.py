@@ -214,6 +214,7 @@ def run_consumer(mode: str) -> None:
 
     def on_message(ch, method, properties, body):
         """Handle a single incoming message from the queue"""
+        LOG.info("Message redelivered: %s", method.redelivered)
         try:
             reading = validate_reading(json.loads(body.decode("utf-8")))
 

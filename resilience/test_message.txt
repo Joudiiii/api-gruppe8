@@ -1,0 +1,28 @@
+source .venv/bin/activate
+
+python - <<'PY'
+import json
+import pika
+from datetime import datetime, timezone
+
+connection = pika.BlockingConnection(
+    pika.ConnectionParameters("localhost")
+)
+channel = connection.channel()
+
+message = {
+    "sensor_id": "crash_test_01",
+    "timestamp": datetime.now(timezone.utc).isoformat(),
+    "type": "temperature",
+    "value": 25
+}
+
+channel.basic_publish(
+    exchange="sensor-exchange",
+    routing_key="sensor.temperature",
+    body=json.dumps(message),
+    properties=pika.BasicProperties(delivery_mode=2)
+)
+
+print("Testnachricht gesendet!")
+connection.close()
